@@ -1,4 +1,4 @@
-# World Wonders
+# Globepedia
 
 A fun country encyclopedia for kids — explore countries, facts, foods, and travel info!
 

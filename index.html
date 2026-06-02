@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="World Wonders — a fun country encyclopedia for kids with facts, continents, and famous foods!"
+      content="Globepedia — a fun country encyclopedia for kids with facts, continents, and famous foods!"
     />
-    <title>World Wonders — Country Encyclopedia for Kids</title>
+    <title>Globepedia — Country Encyclopedia for Kids</title>
     <style>
       *,
       *::before,
@@ -1304,7 +1304,7 @@
               <div class="header-brand">
                 <div class="header-icon">🌍</div>
                 <div>
-                  <h1>World Wonders</h1>
+                  <h1>Globepedia</h1>
                   <p class="tagline">Your fun country encyclopedia for kids!</p>
                 </div>
               </div>
@@ -1323,7 +1323,7 @@
               <span class="country-of-day-cta">→</span>
             </button>
 
-            <nav class="feature-nav" aria-label="Explore World Wonders">
+            <nav class="feature-nav" aria-label="Explore Globepedia">
               <a class="feature-card quiz-link" href="https://pab89154.github.io/guess-the-flag/">
                 <span class="feature-card-icon" aria-hidden="true">🏆</span>
                 <span class="feature-card-label">Flag Quiz</span>
@@ -1687,7 +1687,7 @@
           <div class="form-card">
             <h2 class="form-title">Send Feedback</h2>
             <p class="form-intro">
-              Tell us what you think about World Wonders! Your ideas help make the
+              Tell us what you think about Globepedia! Your ideas help make the
               site better.
             </p>
 
@@ -4645,12 +4645,12 @@
       ];
 
       const BASE_COUNTRIES = COUNTRIES;
-      const STORAGE_PENDING = "worldWonders_pending";
-      const STORAGE_APPROVED = "worldWonders_approved";
-      const STORAGE_FEEDBACK = "worldWonders_feedback";
-      const STORAGE_EDITS = "worldWonders_edits";
+      const STORAGE_PENDING = "globepedia_pending";
+      const STORAGE_APPROVED = "globepedia_approved";
+      const STORAGE_FEEDBACK = "globepedia_feedback";
+      const STORAGE_EDITS = "globepedia_edits";
       const FEEDBACK_EMAIL = "pmolinasamayoa@icloud.com";
-      const REVIEW_PIN = "worldwonders";
+      const REVIEW_PIN = "globeexplorers";
       const COUNTRY_TYPES = [
         "Republic",
         "Kingdom",
@@ -5569,7 +5569,7 @@
       function sendFeedbackEmail(data) {
         const sender = data.name ? `${data.name} wrote:` : "A visitor wrote:";
         const body = `${sender}\n\n${data.message}`;
-        const subject = "World Wonders feedback";
+        const subject = "Globepedia feedback";
         const mailtoUrl = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = mailtoUrl;
       }
