@@ -132,10 +132,6 @@
       }
 
       .top-quick-bar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.4rem;
         margin-bottom: 0.55rem;
       }
 
@@ -143,7 +139,7 @@
         display: flex;
         align-items: center;
         gap: 0.45rem;
-        flex: 1 1 180px;
+        width: 100%;
         min-width: 0;
         background: linear-gradient(135deg, var(--blue), var(--blue-dark));
         color: var(--white);
@@ -201,13 +197,6 @@
         font-weight: 700;
         opacity: 0.9;
         flex-shrink: 0;
-      }
-
-      .feature-nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-        flex: 1 1 auto;
       }
 
       .feature-card {
@@ -281,7 +270,7 @@
         display: flex;
         gap: 0.35rem;
         flex-wrap: wrap;
-        align-items: center;
+        align-items: flex-start;
       }
 
       .search-wrap {
@@ -290,6 +279,8 @@
         gap: 0.35rem;
         flex: 1 1 160px;
         min-width: 140px;
+        min-height: 2.05rem;
+        box-sizing: border-box;
         padding: 0 0.6rem;
         background: var(--white);
         border: 1px solid rgba(31, 41, 55, 0.12);
@@ -330,6 +321,11 @@
       }
 
       .random-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-height: 2.05rem;
         padding: 0.4rem 0.6rem;
         background: var(--green);
         color: var(--white);
@@ -354,9 +350,19 @@
         transform: scale(0.98);
       }
 
+      .action-btn-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+
       .add-country-btn,
       .feedback-btn {
-        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-height: 2.05rem;
         padding: 0.4rem 0.6rem;
         background: var(--white);
         color: var(--blue);
@@ -371,6 +377,14 @@
         transition: transform 0.15s, background 0.15s;
       }
 
+      a.feedback-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        box-sizing: border-box;
+      }
+
       .add-country-btn:hover,
       .feedback-btn:hover {
         background: rgba(30, 58, 138, 0.06);
@@ -383,13 +397,14 @@
         flex-direction: column;
         gap: 0.35rem;
         flex: 0 0 auto;
-        align-self: flex-start;
       }
 
       .translate-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        box-sizing: border-box;
+        min-height: 2.05rem;
         gap: 0.25rem;
         padding: 0.4rem 0.6rem;
         border-radius: calc(var(--radius) - 4px);
@@ -1153,6 +1168,38 @@
         opacity: 0.8;
       }
 
+      .footer-made-with {
+        margin: 0 0 1rem;
+      }
+
+      .footer-fun-fact {
+        max-width: 28rem;
+        margin: 0 auto 1.25rem;
+        padding: 0.85rem 1rem;
+        background: rgba(30, 58, 138, 0.04);
+        border: 1px solid rgba(31, 41, 55, 0.08);
+        border-radius: calc(var(--radius) - 4px);
+        text-align: left;
+        line-height: 1.5;
+        opacity: 1;
+      }
+
+      .footer-fun-fact-lead {
+        margin: 0 0 0.5rem;
+        font-size: 0.82rem;
+        color: var(--text);
+      }
+
+      .footer-fun-fact-list {
+        margin: 0;
+        padding-left: 1.1rem;
+        font-size: 0.8rem;
+      }
+
+      .footer-fun-fact-list li {
+        margin: 0.15rem 0;
+      }
+
       .explore-list {
         display: grid;
         gap: 0.85rem;
@@ -1269,15 +1316,6 @@
           padding-right: 0.75rem;
         }
 
-        .top-quick-bar {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .feature-nav {
-          justify-content: flex-start;
-        }
-
         .filter-row {
           align-items: flex-start;
         }
@@ -1331,13 +1369,6 @@
               </span>
               <span class="country-of-day-cta">→</span>
             </button>
-
-            <nav class="feature-nav" aria-label="Explore Globepedia">
-              <a class="feature-card quiz-link" href="https://pab89154.github.io/guess-the-flag/">
-                <span class="feature-card-icon" aria-hidden="true">🏆</span>
-                <span class="feature-card-label">Flag Quiz</span>
-              </a>
-            </nav>
           </div>
 
           <div class="toolbar">
@@ -1355,9 +1386,17 @@
               <button type="button" class="add-country-btn" id="add-country-btn">
                 ➕ Add
               </button>
-              <button type="button" class="feedback-btn" id="feedback-toolbar-btn">
-                💬 Feedback
-              </button>
+              <div class="action-btn-stack">
+                <button type="button" class="feedback-btn" id="feedback-toolbar-btn">
+                  💬 Feedback
+                </button>
+                <a
+                  class="feedback-btn"
+                  href="https://pab89154.github.io/guess-the-flag/"
+                >
+                  🏆 Flag Quiz
+                </a>
+              </div>
               <div class="translate-wrap" id="translate-wrap">
                 <button type="button" class="random-btn" id="random-btn">
                   🎲 Random
@@ -1793,7 +1832,21 @@
         </section>
 
         <footer class="footer">
-          Made with 🌍 for curious kids everywhere
+          <p class="footer-made-with">Made with 🌍 for curious kids everywhere</p>
+          <div class="footer-fun-fact">
+            <p class="footer-fun-fact-lead">
+              <strong>Fun fact:</strong> If you wanted to memorize all 195 countries, a good
+              strategy is to learn them continent by continent:
+            </p>
+            <ul class="footer-fun-fact-list">
+              <li>Africa: 54</li>
+              <li>Asia: 48</li>
+              <li>Europe: 44</li>
+              <li>North America: 23</li>
+              <li>South America: 12</li>
+              <li>Oceania: 14</li>
+            </ul>
+          </div>
           <div class="footer-links">
             <a class="footer-link" href="https://pab89154.github.io/guess-the-flag/">🏆 Flag Quiz</a>
             <button type="button" class="footer-link" id="feedback-link">
