@@ -1115,6 +1115,27 @@
         border-left-color: var(--blue-dark);
       }
 
+      .fact-card.wildlife-fact {
+        border-left-color: #2d8a4e;
+      }
+
+      .wildlife-more-link {
+        margin: 0.85rem 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted, #5a6472);
+        line-height: 1.55;
+      }
+
+      .wildlife-more-link a {
+        color: var(--blue);
+        font-weight: 600;
+        text-decoration: underline;
+      }
+
+      .wildlife-more-link a:hover {
+        color: var(--blue-dark);
+      }
+
       .fact-label {
         display: flex;
         align-items: center;
@@ -1264,6 +1285,24 @@
         font-size: 0.95rem;
       }
 
+      .world-map-panel {
+        background: var(--white);
+        border: 1px solid rgba(31, 41, 55, 0.08);
+        border-radius: var(--radius);
+        padding: 0.75rem;
+        box-shadow: var(--shadow);
+        text-align: center;
+      }
+
+      .world-map-image {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        border-radius: calc(var(--radius) - 4px);
+      }
+
       @media (min-width: 900px) {
         .container {
           padding-left: 1.25rem;
@@ -1383,9 +1422,14 @@
                   autocomplete="off"
                 />
               </div>
-              <button type="button" class="add-country-btn" id="add-country-btn">
-                ➕ Add
-              </button>
+              <div class="action-btn-stack">
+                <button type="button" class="add-country-btn" id="add-country-btn">
+                  ➕ Add a Country
+                </button>
+                <button type="button" class="feedback-btn" id="world-map-btn">
+                  🗺️ Explore the World Map!
+                </button>
+              </div>
               <div class="action-btn-stack">
                 <button type="button" class="feedback-btn" id="feedback-toolbar-btn">
                   💬 Feedback
@@ -1480,6 +1524,19 @@
               <p class="fact-label">📏 How Big It Is</p>
               <p class="fact-text" id="detail-size"></p>
             </div>
+            <div class="fact-card wildlife-fact">
+              <p class="fact-label">🦁 Amazing Animals</p>
+              <p class="fact-text" id="detail-wildlife"></p>
+              <p class="wildlife-more-link">
+                You can learn more about these animals by clicking
+                <a
+                  id="detail-wildlife-link"
+                  href="https://pab89154.github.io/Wild-Wonders/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >here</a>!
+              </p>
+            </div>
           </div>
         </section>
 
@@ -1505,6 +1562,31 @@
             Cool places, landmarks, and travel tips from every corner of the globe!
           </p>
           <div class="explore-list" id="travel-list"></div>
+        </section>
+
+        <!-- WORLD MAP SCREEN -->
+        <section id="map-screen" class="screen">
+          <button type="button" class="back-btn" id="map-back-btn">
+            ← Back to all countries
+          </button>
+          <h2 class="explore-page-title">🗺️ Map of the World</h2>
+          <p class="explore-page-intro">
+            Explore continents, oceans, and countries on this world map. Use it to help
+            memorize countries continent by continent!
+          </p>
+          <div class="world-map-panel">
+            <img
+              class="world-map-image"
+              src="world-map-4k.png"
+              srcset="world-map-4k.png 3840w, world-map.png 630w"
+              sizes="(min-width: 900px) 900px, 100vw"
+              alt="Outline map of the world showing continents, oceans, and the equator"
+              width="3840"
+              height="1920"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </section>
 
         <!-- ADD COUNTRY SCREEN -->
@@ -1591,6 +1673,12 @@
                 <label for="add-extra-fact">Did you know?</label>
                 <textarea id="add-extra-fact" name="extraFact" required maxlength="600" placeholder="Another true fact about this country&#10;One more surprising fact"></textarea>
                 <p class="form-hint">Add 2–3 facts, one per line.</p>
+              </div>
+
+              <div class="form-field">
+                <label for="add-wildlife">Amazing animals</label>
+                <textarea id="add-wildlife" name="wildlifeFact" required maxlength="600" placeholder="Snow leopards prowl the mountains&#10;Golden eagles soar above the valleys&#10;Ibex climb steep rocky cliffs"></textarea>
+                <p class="form-hint">Add 2–3 wildlife facts, one per line.</p>
               </div>
 
               <div class="form-field">
@@ -1690,6 +1778,12 @@
                 <label for="edit-extra-fact">Did you know?</label>
                 <textarea id="edit-extra-fact" name="extraFact" required maxlength="600"></textarea>
                 <p class="form-hint">Add 2–3 facts, one per line.</p>
+              </div>
+
+              <div class="form-field">
+                <label for="edit-wildlife">Amazing animals</label>
+                <textarea id="edit-wildlife" name="wildlifeFact" required maxlength="600"></textarea>
+                <p class="form-hint">Add 2–3 wildlife facts, one per line.</p>
               </div>
 
               <div id="edit-form-error-box" class="form-error" hidden></div>
@@ -1861,7 +1955,6 @@
 
       <div id="google_translate_element" class="google-translate-host"></div>
     </div>
-
     <script src="countries.js" onerror="window.GLOBEPEDIA_COUNTRIES_FAILED = true"></script>
     <script>
       const HABITATS = [
@@ -1878,12 +1971,14 @@
       function getCountriesData() {
         return Array.isArray(window.GLOBEPEDIA_COUNTRIES) ? window.GLOBEPEDIA_COUNTRIES : [];
       }
+
       const STORAGE_PENDING = "globepedia_pending";
       const STORAGE_APPROVED = "globepedia_approved";
       const STORAGE_FEEDBACK = "globepedia_feedback";
       const STORAGE_EDITS = "globepedia_edits";
       const FEEDBACK_EMAIL = "pmolinasamayoa@icloud.com";
       const REVIEW_PIN = "globeexplorers";
+      const ANIMAL_ENCYCLOPEDIA_URL = "https://pab89154.github.io/Wild-Wonders/";
       const COUNTRY_TYPES = [
         "Republic",
         "Kingdom",
@@ -1963,6 +2058,7 @@
       const detailScreen = document.getElementById("detail-screen");
       const foodsScreen = document.getElementById("foods-screen");
       const travelScreen = document.getElementById("travel-screen");
+      const mapScreen = document.getElementById("map-screen");
       const countryOfDayCard = document.getElementById("country-of-day-card");
       const addScreen = document.getElementById("add-screen");
       const successScreen = document.getElementById("success-screen");
@@ -2220,6 +2316,7 @@
         { arrayKey: "livesInFacts", legacyKey: "livesIn", label: "where it is", addId: "add-lives-in", editId: "edit-lives-in" },
         { arrayKey: "dietFacts", legacyKey: "diet", label: "famous food", addId: "add-diet", editId: "edit-diet" },
         { arrayKey: "sizeFacts", legacyKey: "size", label: "how big it is", addId: "add-size", editId: "edit-size" },
+        { arrayKey: "wildlifeFacts", legacyKey: "wildlifeFact", label: "amazing animals", addId: "add-wildlife", editId: "edit-wildlife" },
       ];
 
       function parseFactLines(text) {
@@ -2373,6 +2470,10 @@
       function showTravelScreen() {
         renderTravelList();
         showScreen(travelScreen);
+      }
+
+      function showWorldMap() {
+        showScreen(mapScreen);
       }
 
       function showCountryOfTheDay() {
@@ -2575,6 +2676,8 @@
           livesInFacts: data.livesInFacts,
           dietFacts: data.dietFacts,
           sizeFacts: data.sizeFacts,
+          wildlifeFact: data.wildlifeFact,
+          wildlifeFacts: data.wildlifeFacts,
         };
         if (existing?.icon) {
           fields.icon = existing.icon;
@@ -3082,6 +3185,7 @@
               <p><strong>Where it is:</strong><br>${formatReviewFacts(entry, "livesInFacts", "livesIn")}</p>
               <p><strong>Famous food:</strong><br>${formatReviewFacts(entry, "dietFacts", "diet")}</p>
               <p><strong>How big:</strong><br>${formatReviewFacts(entry, "sizeFacts", "size")}</p>
+              <p><strong>Amazing animals:</strong><br>${formatReviewFacts(entry, "wildlifeFacts", "wildlifeFact")}</p>
             </div>
             <div class="review-actions">
               <button type="button" class="edit-btn" data-id="${entry.id}">Edit</button>
@@ -3236,12 +3340,12 @@
           return;
         }
 
-        if (window.GLOBEPEDIA_COUNTRIES_FAILED || getBaseCountries().length === 0) {
-          showBootError(
-            "Country data did not load. Keep countries.js in the same folder as index.html, then refresh."
-          );
+        if (getBaseCountries().length === 0) {
+          showBootError("Country data did not load. Please refresh the page.");
           return;
         }
+
+        filterGrid.innerHTML = "";
 
         try {
           renderGrid();
@@ -3295,25 +3399,51 @@
         return !window.GLOBEPEDIA_COUNTRIES_FAILED && getBaseCountries().length > 0;
       }
 
-      function reloadCountriesScript() {
-        return new Promise((resolve) => {
-          const script = document.createElement("script");
-          script.src = "countries.js";
-          script.onload = () => resolve(countriesAreReady());
-          script.onerror = () => {
-            window.GLOBEPEDIA_COUNTRIES_FAILED = true;
-            resolve(false);
-          };
-          document.head.appendChild(script);
-        });
+      async function ensureCountriesLoaded() {
+        if (countriesAreReady()) return true;
+
+        try {
+          const response = await fetch("countries.js", { cache: "no-store" });
+          if (response.ok) {
+            new Function(await response.text())();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+
+        return countriesAreReady();
       }
 
-      function initGlobepedia() {
+      let globepediaInitialized = false;
+
+      async function initGlobepedia() {
+        if (globepediaInitialized) return;
+
+        if (!(await ensureCountriesLoaded())) {
+          showBootError(
+            "Country data did not load. Keep countries.js in the same folder as index.html, then refresh."
+          );
+          try {
+            wireAppControls();
+          } catch (error) {
+            console.error(error);
+          }
+          return;
+        }
+
         try {
           bootGlobepedia();
         } catch (error) {
           showBootError(error);
+          return;
         }
+
+        if (!countryGrid || countryGrid.querySelectorAll(".country-card").length === 0) {
+          showBootError("Countries did not render. Please refresh the page.");
+          return;
+        }
+
+        globepediaInitialized = true;
 
         try {
           wireAppControls();
@@ -3322,29 +3452,11 @@
         }
       }
 
-      async function startGlobepedia() {
-        if (!countriesAreReady()) {
-          await reloadCountriesScript();
-        }
-
-        for (let attempt = 0; attempt < 20 && !countriesAreReady(); attempt += 1) {
-          await new Promise((resolve) => setTimeout(resolve, 50));
-        }
-
-        initGlobepedia();
-      }
-
-      function queueStartGlobepedia() {
-        startGlobepedia().catch((error) => {
+      function queueInitGlobepedia() {
+        initGlobepedia().catch((error) => {
           console.error(error);
           showBootError(error);
         });
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", queueStartGlobepedia);
-      } else {
-        queueStartGlobepedia();
       }
 
       function wireClick(id, handler) {
@@ -3371,6 +3483,11 @@
         renderFactList("detail-diet", getCountryFacts(country, "dietFacts", "diet"));
         renderFactList("detail-travel", getTravelFacts(country));
         renderFactList("detail-size", getCountryFacts(country, "sizeFacts", "size"));
+        renderFactList("detail-wildlife", getCountryFacts(country, "wildlifeFacts", "wildlifeFact"));
+        const wildlifeLink = document.getElementById("detail-wildlife-link");
+        if (wildlifeLink) {
+          wildlifeLink.href = ANIMAL_ENCYCLOPEDIA_URL;
+        }
 
         showScreen(detailScreen);
       }
@@ -3422,6 +3539,8 @@
 
         bind(backBtn, "click", showHome);
         bind(addCountryBtn, "click", showAddForm);
+        wireClick("world-map-btn", showWorldMap);
+        wireClick("map-back-btn", showHome);
         bind(addBackBtn, "click", showHome);
         bind(addCancelBtn, "click", showHome);
         bind(addCountryForm, "submit", handleAddSubmit);
@@ -3502,6 +3621,11 @@
         if (activeTranslateLang) {
           scheduleTranslatedGridSort(activeTranslateLang);
         }
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", queueInitGlobepedia);
+      } else {
+        queueInitGlobepedia();
       }
     </script>
     <script>
