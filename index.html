@@ -9,7 +9,25 @@
     />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <title>Globepedia — Country Encyclopedia for Kids</title>
+    <script>
+      (function () {
+        try {
+          var key = "country-encyclopedia-night-mode";
+          var saved = localStorage.getItem(key);
+          var dark =
+            saved === "true" ||
+            (saved !== "false" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) {
+            document.documentElement.classList.add("night-mode");
+            document.documentElement.style.colorScheme = "dark";
+          } else {
+            document.documentElement.style.colorScheme = "light";
+          }
+        } catch (e) {}
+      })();
+    </script>
+<title>Globepedia — Country Encyclopedia for Kids</title>
     <style>
       *,
       *::before,
@@ -34,6 +52,89 @@
         --radius: 16px;
         --shadow: 0 4px 16px rgba(31, 41, 55, 0.08);
         --shadow-hover: 0 8px 24px rgba(31, 41, 55, 0.12);
+        color-scheme: light;
+      }
+
+      html.night-mode {
+        --blue: #60a5fa;
+        --blue-dark: #3b82f6;
+        --blue-light: #93c5fd;
+        --green: #34d399;
+        --green-dark: #10b981;
+        --green-light: #6ee7b7;
+        --white: #ffffff;
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --text: #e5e7eb;
+        --text-muted: #94a3b8;
+        --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+        color-scheme: dark;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html:not(.night-mode):not(.day-mode) {
+          --blue: #60a5fa;
+          --blue-dark: #3b82f6;
+          --blue-light: #93c5fd;
+          --green: #34d399;
+          --green-dark: #10b981;
+          --green-light: #6ee7b7;
+          --white: #ffffff;
+          --bg: #0f172a;
+          --surface: #1e293b;
+          --text: #e5e7eb;
+          --text-muted: #94a3b8;
+          --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+          --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.45);
+          color-scheme: dark;
+        }
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+      }
+
+      .night-mode-btn {
+        padding: 0.2rem 0.55rem;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        color: var(--white);
+        font-family: inherit;
+        font-size: 0.72rem;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .night-mode-btn:hover {
+        background: rgba(255, 255, 255, 0.28);
+      }
+
+      html.night-mode .country-card,
+      html.night-mode .detail-card,
+      html.night-mode .toolbar,
+      html.night-mode .form-card,
+      html.night-mode .search-wrap,
+      html.night-mode .feature-card,
+      html.night-mode input,
+      html.night-mode textarea,
+      html.night-mode select {
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      html.night-mode .add-country-btn,
+      html.night-mode .feedback-btn,
+      html.night-mode .translate-btn,
+      html.night-mode .filter-pill {
+        background: var(--surface);
+        color: var(--blue-light);
+        border-color: rgba(96, 165, 250, 0.35);
       }
 
       body {
@@ -1298,6 +1399,23 @@
         border-radius: calc(var(--radius) - 4px);
       }
 
+      .flagify-sandbox-panel {
+        background: var(--white);
+        border: 1px solid rgba(31, 41, 55, 0.08);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        min-height: min(78vh, 720px);
+      }
+
+      .flagify-sandbox {
+        display: block;
+        width: 100%;
+        min-height: min(78vh, 720px);
+        border: 0;
+        background: #f8fafc;
+      }
+
       @media (min-width: 900px) {
         .container {
           padding-left: 1.25rem;
@@ -1401,7 +1519,19 @@
                   <p class="tagline">Your fun country encyclopedia for kids!</p>
                 </div>
               </div>
-              <p class="country-count" id="country-count"></p>
+              <div class="header-actions">
+                <button
+                  type="button"
+                  class="night-mode-btn"
+                  id="night-mode-btn"
+                  title="Night mode"
+                  aria-label="Toggle night mode"
+                  aria-pressed="false"
+                >
+                  🌙 Night
+                </button>
+                <p class="country-count" id="country-count"></p>
+              </div>
             </div>
           </header>
 
@@ -1441,12 +1571,9 @@
                 <button type="button" class="feedback-btn" id="feedback-toolbar-btn">
                   💬 Feedback
                 </button>
-                <a
-                  class="feedback-btn"
-                  href="https://pab89154.github.io/guess-the-flag/"
-                >
+                <button type="button" class="feedback-btn" id="flag-quiz-btn">
                   🏆 Flag Quiz
-                </a>
+                </button>
               </div>
               <div class="translate-wrap" id="translate-wrap">
                 <button type="button" class="random-btn" id="random-btn">
@@ -1593,6 +1720,26 @@
               loading="lazy"
               decoding="async"
             />
+          </div>
+        </section>
+
+        <!-- FLAGIFY SANDBOX -->
+        <section id="flag-screen" class="screen">
+          <button type="button" class="back-btn" id="flag-back-btn">
+            ← Back to all countries
+          </button>
+          <h2 class="explore-page-title">🏆 Flagify</h2>
+          <p class="explore-page-intro">
+            Guess the country from its flag — play right here without leaving Globepedia!
+          </p>
+          <div class="flagify-sandbox-panel">
+            <iframe
+              id="flagify-frame"
+              class="flagify-sandbox"
+              title="Flagify flag quiz game"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              loading="lazy"
+            ></iframe>
           </div>
         </section>
 
@@ -1949,7 +2096,9 @@
             </ul>
           </div>
           <div class="footer-links">
-            <a class="footer-link" href="https://pab89154.github.io/guess-the-flag/">🏆 Flag Quiz</a>
+            <button type="button" class="footer-link" id="flag-quiz-footer-btn">
+              🏆 Flag Quiz
+            </button>
             <button type="button" class="footer-link" id="feedback-link">
               💬 Send feedback
             </button>
@@ -2066,12 +2215,78 @@
       const foodsScreen = document.getElementById("foods-screen");
       const travelScreen = document.getElementById("travel-screen");
       const mapScreen = document.getElementById("map-screen");
+      const flagScreen = document.getElementById("flag-screen");
+      const flagifyFrame = document.getElementById("flagify-frame");
+      let flagifyLoaded = false;
       const countryOfDayCard = document.getElementById("country-of-day-card");
       const addScreen = document.getElementById("add-screen");
       const successScreen = document.getElementById("success-screen");
       const feedbackScreen = document.getElementById("feedback-screen");
       const reviewScreen = document.getElementById("review-screen");
       const editScreen = document.getElementById("edit-screen");
+
+      const nightModeBtn = document.getElementById("night-mode-btn");
+      const NIGHT_MODE_KEY = "country-encyclopedia-night-mode";
+
+      function systemPrefersDark() {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches;
+      }
+
+      function isNightModeOn() {
+        return document.documentElement.classList.contains("night-mode");
+      }
+
+      function applyNightMode(enabled, persist) {
+        document.documentElement.classList.toggle("night-mode", enabled);
+        document.documentElement.classList.toggle("day-mode", !enabled);
+        document.documentElement.style.colorScheme = enabled ? "dark" : "light";
+        if (nightModeBtn) {
+          nightModeBtn.setAttribute("aria-pressed", enabled ? "true" : "false");
+          nightModeBtn.title = enabled ? "Day mode" : "Night mode";
+          nightModeBtn.setAttribute(
+            "aria-label",
+            enabled ? "Switch to day mode" : "Switch to night mode"
+          );
+          nightModeBtn.textContent = enabled ? "☀️ Day" : "🌙 Night";
+        }
+        if (persist) {
+          try {
+            localStorage.setItem(NIGHT_MODE_KEY, enabled ? "true" : "false");
+          } catch (e) {}
+        }
+      }
+
+      function resolveNightMode() {
+        try {
+          const saved = localStorage.getItem(NIGHT_MODE_KEY);
+          if (saved === "true") return true;
+          if (saved === "false") return false;
+        } catch (e) {}
+        return systemPrefersDark();
+      }
+
+      applyNightMode(resolveNightMode(), false);
+
+      if (nightModeBtn) {
+        nightModeBtn.addEventListener("click", () => {
+          applyNightMode(!isNightModeOn(), true);
+        });
+      }
+
+      try {
+        window
+          .matchMedia("(prefers-color-scheme: dark)")
+          .addEventListener("change", () => {
+            try {
+              if (localStorage.getItem(NIGHT_MODE_KEY) == null) {
+                applyNightMode(systemPrefersDark(), false);
+              }
+            } catch (e) {
+              applyNightMode(systemPrefersDark(), false);
+            }
+          });
+      } catch (e) {}
+
       const countryCountEl = document.getElementById("country-count");
       const searchInput = document.getElementById("search-input");
       const randomBtn = document.getElementById("random-btn");
@@ -2481,6 +2696,14 @@
 
       function showWorldMap() {
         showScreen(mapScreen);
+      }
+
+      function showFlagQuiz() {
+        if (flagifyFrame && !flagifyLoaded) {
+          flagifyFrame.src = "flagify/index.html";
+          flagifyLoaded = true;
+        }
+        showScreen(flagScreen);
       }
 
       function showCountryOfTheDay() {
@@ -3548,6 +3771,9 @@
         bind(addCountryBtn, "click", showAddForm);
         wireClick("world-map-btn", showWorldMap);
         wireClick("map-back-btn", showHome);
+        wireClick("flag-quiz-btn", showFlagQuiz);
+        wireClick("flag-quiz-footer-btn", showFlagQuiz);
+        wireClick("flag-back-btn", showHome);
         bind(addBackBtn, "click", showHome);
         bind(addCancelBtn, "click", showHome);
         bind(addCountryForm, "submit", handleAddSubmit);
