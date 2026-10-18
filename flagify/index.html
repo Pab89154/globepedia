@@ -1167,7 +1167,7 @@
       var LEVEL_CONFIG = {
         easy: { wrongCount: 3, questions: 10 },
         medium: { wrongCount: 3, questions: 10 },
-        hard: { wrongCount: 5, questions: 10 },
+        hard: { wrongCount: 7, questions: 10 },
       };
 
       var ROUND_BY_LEVEL = {
@@ -1305,7 +1305,7 @@
 
       function refreshAnswerLabels() {
         answersEl.querySelectorAll(".answer-btn").forEach(function (btn) {
-          btn.textContent = countryName(btn.getAttribute("data-code"));
+          btn.textContent = answerLabel(btn);
         });
       }
 
@@ -1380,6 +1380,251 @@
         return picked;
       }
 
+      var GENERIC_NAME_WORDS = {
+        republic: 1, islands: 1, island: 1, federation: 1, states: 1,
+        kingdom: 1, coast: 1, the: 1, of: 1, and: 1, democratic: 1,
+        new: 1, north: 1, south: 1, western: 1, eastern: 1, equatorial: 1,
+      };
+      var realCountryNameKeys = null;
+
+      function normalizeName(value) {
+        return String(value || "")
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
+
+      function realNames() {
+        if (realCountryNameKeys) return realCountryNameKeys;
+        realCountryNameKeys = {};
+        Object.keys(COUNTRY_NAMES).forEach(function (code) {
+          LANGS.forEach(function (codeLang) {
+            realCountryNameKeys[normalizeName(COUNTRY_NAMES[code][codeLang])] = true;
+          });
+        });
+        return realCountryNameKeys;
+      }
+
+      function nameDistance(a, b) {
+        var dp = [];
+        for (var i = 0; i <= a.length; i++) {
+          dp[i] = [i];
+          for (var j = 1; j <= b.length; j++) {
+            if (i === 0) dp[i][j] = j;
+            else {
+              var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+              dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,
+                dp[i][j - 1] + 1,
+                dp[i - 1][j - 1] + cost
+              );
+            }
+          }
+        }
+        return dp[a.length][b.length];
+      }
+
+      function titleWord(word) {
+        if (!word) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+
+      function wordLookalikes(word) {
+        var list = [];
+        function add(next) {
+          if (next && next.toLowerCase() !== word.toLowerCase()) list.push(next);
+        }
+        if (/stan$/i.test(word)) {
+          add(word.replace(/stan$/i, "land"));
+          add(word.replace(/stan$/i, "sia"));
+          add(word.replace(/stan$/i, "stania"));
+          add(word.replace(/stan$/i, "stine"));
+          add(word.replace(/stan$/i, "stana"));
+          add(word.replace(/stan$/i, "stia"));
+        } else if (/land$/i.test(word)) {
+          add(word.replace(/land$/i, "lia"));
+          add(word.replace(/land$/i, "landia"));
+          add(word.replace(/land$/i, "lande"));
+          add(word.replace(/land$/i, "landa"));
+          add(word.replace(/land$/i, "via"));
+        } else if (/ia$/i.test(word)) {
+          add(word.replace(/ia$/i, "aria"));
+          add(word.replace(/ia$/i, "ovia"));
+          add(word.replace(/ia$/i, "esia"));
+          add(word.replace(/ia$/i, "ena"));
+          add(word.replace(/ia$/i, "iana"));
+          add(word.replace(/ia$/i, "olia"));
+          add(word.replace(/ia$/i, "inia"));
+          add(word.replace(/ia$/i, "ique"));
+          add(word.replace(/ia$/i, "une"));
+        } else if (/i$/i.test(word)) {
+          add(word + "ana");
+          add(word + "na");
+          add(word + "ta");
+          add(word.slice(0, -1) + "enia");
+          add(word.slice(0, -1) + "ora");
+          add(word.slice(0, -1) + "ina");
+        } else if (/u$/i.test(word)) {
+          add(word + "an");
+          add(word + "nia");
+          add(word + "la");
+          add(word.slice(0, -1) + "aria");
+          add(word.slice(0, -1) + "uria");
+          add(word.slice(0, -1) + "avia");
+        } else if (/o$/i.test(word)) {
+          add(word + "nia");
+          add(word + "via");
+          add(word + "na");
+          add(word.slice(0, -1) + "avia");
+          add(word.slice(0, -1) + "oria");
+          add(word.slice(0, -1) + "ona");
+          add(word.slice(0, -1) + "osa");
+        } else if (/e$/i.test(word)) {
+          add(word + "nia");
+          add(word + "lia");
+          add(word + "se");
+          add(word.slice(0, -1) + "ia");
+          add(word.slice(0, -1) + "ine");
+          add(word.slice(0, -1) + "ese");
+          if (word.length <= 7) add(word.slice(0, -1) + "ora");
+        } else if (/a$/i.test(word)) {
+          add(word.slice(0, -1) + "ia");
+          add(word.slice(0, -1) + "aria");
+          add(word.slice(0, -1) + "ovia");
+          add(word.slice(0, -1) + "esia");
+          add(word.slice(0, -1) + "ana");
+          add(word.slice(0, -1) + "una");
+          add(word.slice(0, -1) + "ada");
+          add(word + "na");
+        } else {
+          add(word + "ia");
+          add(word + "avia");
+          add(word + "ovia");
+          add(word + "ica");
+          add(word + "ita");
+          add(word + "ine");
+          if (!/n$/i.test(word)) {
+            add(word + "ena");
+            add(word + "ana");
+            if (word.length <= 6) add(word + "ora");
+          }
+          if (word.length <= 6) add(word + "istan");
+          if (/an$/i.test(word)) {
+            add(word.slice(0, -2) + "ania");
+            add(word.slice(0, -2) + "ara");
+            add(word.slice(0, -2) + "onia");
+            add(word.slice(0, -2) + "en");
+            add(word.slice(0, -2) + "in");
+          }
+          if (/os$/i.test(word)) {
+            add(word.slice(0, -2) + "osia");
+            add(word.slice(0, -2) + "ova");
+            add(word.slice(0, -2) + "as");
+          }
+        }
+        return list;
+      }
+
+      function plausibleLookalike(baseWord, candidate) {
+        if (!candidate || candidate.length < 4 || candidate.length > 16) return false;
+        if (!/^[\p{L}]+$/u.test(candidate)) return false;
+        if (/ii|aa|uu/i.test(candidate)) return false;
+        var foldedBase = normalizeName(baseWord);
+        var folded = normalizeName(candidate);
+        var vowels = (folded.match(/[aeiouy]/g) || []).length;
+        if (vowels < 2) return false;
+        if (/[bcdfghjklmnpqrstvwxz]{4,}/i.test(folded)) return false;
+        var dist = nameDistance(foldedBase, folded);
+        if (dist === 0 || dist > 6) return false;
+        if (dist === 1) {
+          var before = foldedBase.charAt(foldedBase.length - 2);
+          var insertedIa = folded === foldedBase.slice(0, -1) + "ia";
+          if (!(baseWord.length >= 6 && insertedIa && before && !/[aeiouy]/.test(before))) return false;
+        }
+        return true;
+      }
+
+      function lookalikeNames(sourceName) {
+        var parts = String(sourceName || "").trim().split(/[\s-]+/);
+        var hasGeneric = parts.some(function (part) {
+          return GENERIC_NAME_WORDS[normalizeName(part)];
+        });
+        var content = parts.filter(function (part) {
+          return part && !GENERIC_NAME_WORDS[normalizeName(part)];
+        });
+        var target = content.length ? content[content.length - 1] : parts[parts.length - 1];
+        var standalone = parts.length >= 3 || hasGeneric;
+        var seen = {};
+        var names = [];
+        wordLookalikes(target).forEach(function (variant) {
+          if (!plausibleLookalike(target, variant)) return;
+          var display = titleWord(variant);
+          if (!standalone && parts.length > 1) {
+            var phrase = sourceName.replace(target, display);
+            display = phrase.length > 22 ? titleWord(variant) : phrase;
+          }
+          var key = normalizeName(display);
+          if (seen[key] || realNames()[key]) return;
+          seen[key] = true;
+          names.push(display);
+        });
+        return names;
+      }
+
+      function makeLookalike(sourceName, transformId) {
+        var names = lookalikeNames(sourceName);
+        if (!names.length) return null;
+        return names[transformId % names.length];
+      }
+
+      function pickHardFakes(correctCode, count) {
+        var used = {};
+        used[normalizeName(countryName(correctCode))] = true;
+        var picked = [];
+
+        function take(baseCode, limit) {
+          var options = lookalikeNames(countryName(baseCode));
+          var order = shuffle(options.map(function (name, index) {
+            return { name: name, transform: index };
+          }));
+          var added = 0;
+          order.forEach(function (option) {
+            if (added >= limit || picked.length >= count) return;
+            var key = normalizeName(option.name);
+            if (used[key]) return;
+            used[key] = true;
+            picked.push({
+              fake: true,
+              code: "fake",
+              base: baseCode,
+              transform: option.transform,
+            });
+            added++;
+          });
+        }
+
+        take(correctCode, Math.min(3, count));
+        var others = shuffle(Object.keys(COUNTRY_NAMES).filter(function (code) {
+          return code !== correctCode;
+        }));
+        others.forEach(function (code) {
+          if (picked.length >= count) return;
+          take(code, 1);
+        });
+        return picked.slice(0, count);
+      }
+
+      function answerLabel(btn) {
+        if (btn.getAttribute("data-fake") === "1") {
+          return makeLookalike(
+            countryName(btn.getAttribute("data-base")),
+            Number(btn.getAttribute("data-transform"))
+          ) || "";
+        }
+        return countryName(btn.getAttribute("data-code"));
+      }
+
       function updateLevelDisplay() {
         document.getElementById("levelBadge").textContent = t(level);
         document.querySelectorAll(".level-btn").forEach(function (btn) {
@@ -1417,20 +1662,36 @@
         flagImg.alt = t("flagAlt");
 
         var wrongCount = (LEVEL_CONFIG[level] || LEVEL_CONFIG.easy).wrongCount;
-        var wrongChoices = pickDistractors(COUNTRIES[level], currentCode, wrongCount);
-        var choices = shuffle(wrongChoices.concat([currentCode]));
+        var choices;
+        if (level === "hard") {
+          choices = pickHardFakes(currentCode, wrongCount).concat([{
+            fake: false,
+            code: currentCode,
+          }]);
+        } else {
+          choices = pickDistractors(COUNTRIES[level], currentCode, wrongCount).map(function (code) {
+            return { fake: false, code: code };
+          });
+          choices.push({ fake: false, code: currentCode });
+        }
+        choices = shuffle(choices);
 
         answersEl.className = wrongCount > 3 ? "answers many-choices" : "answers";
 
         answersEl.innerHTML = "";
-        choices.forEach(function (code) {
+        choices.forEach(function (choice) {
           var btn = document.createElement("button");
           btn.type = "button";
           btn.className = "answer-btn";
-          btn.setAttribute("data-code", code);
-          btn.textContent = countryName(code);
+          btn.setAttribute("data-code", choice.code);
+          btn.setAttribute("data-fake", choice.fake ? "1" : "0");
+          if (choice.fake) {
+            btn.setAttribute("data-base", choice.base);
+            btn.setAttribute("data-transform", String(choice.transform));
+          }
+          btn.textContent = answerLabel(btn);
           btn.onclick = function () {
-            pickAnswer(btn, code, currentCode);
+            pickAnswer(btn, choice.code, currentCode);
           };
           answersEl.appendChild(btn);
         });
